@@ -80,9 +80,9 @@ impl embedded_hal::delay::DelayNs for FakeDelayer {
 
 struct FakeTimesource();
 
-impl embedded_sdmmc::TimeSource for FakeTimesource {
-    fn get_timestamp(&self) -> embedded_sdmmc::Timestamp {
-        embedded_sdmmc::Timestamp {
+impl embedded_sdmmc::blocking::TimeSource for FakeTimesource {
+    fn get_timestamp(&self) -> embedded_sdmmc::blocking::Timestamp {
+        embedded_sdmmc::blocking::Timestamp {
             year_since_1970: 0,
             zero_indexed_month: 0,
             zero_indexed_day: 0,
@@ -95,18 +95,18 @@ impl embedded_sdmmc::TimeSource for FakeTimesource {
 
 #[derive(Debug, Clone)]
 enum Error {
-    Filesystem(embedded_sdmmc::Error<embedded_sdmmc::SdCardError>),
-    Disk(embedded_sdmmc::SdCardError),
+    Filesystem(embedded_sdmmc::blocking::Error<embedded_sdmmc::blocking::SdCardError>),
+    Disk(embedded_sdmmc::blocking::SdCardError),
 }
 
-impl From<embedded_sdmmc::Error<embedded_sdmmc::SdCardError>> for Error {
-    fn from(value: embedded_sdmmc::Error<embedded_sdmmc::SdCardError>) -> Error {
+impl From<embedded_sdmmc::blocking::Error<embedded_sdmmc::blocking::SdCardError>> for Error {
+    fn from(value: embedded_sdmmc::blocking::Error<embedded_sdmmc::blocking::SdCardError>) -> Error {
         Error::Filesystem(value)
     }
 }
 
-impl From<embedded_sdmmc::SdCardError> for Error {
-    fn from(value: embedded_sdmmc::SdCardError) -> Error {
+impl From<embedded_sdmmc::blocking::SdCardError> for Error {
+    fn from(value: embedded_sdmmc::blocking::SdCardError) -> Error {
         Error::Disk(value)
     }
 }
@@ -120,21 +120,21 @@ fn main() -> Result<(), Error> {
     // END Fake stuff that will be replaced with real peripherals
 
     // Build an SD Card interface out of an SPI device, a chip-select pin and the delay object
-    let sdcard = embedded_sdmmc::SdCard::new(sdmmc_spi, delay);
+    let sdcard = embedded_sdmmc::blocking::SdCard::new(sdmmc_spi, delay);
     // Get the card size (this also triggers card initialisation because it's not been done yet)
     println!("Card size is {} bytes", sdcard.num_bytes()?);
     // Now let's look for volumes (also known as partitions) on our block device.
     // To do this we need a Volume Manager. It will take ownership of the block device.
-    let volume_mgr = embedded_sdmmc::VolumeManager::new(sdcard, time_source);
+    let volume_mgr = embedded_sdmmc::blocking::VolumeManager::new(sdcard, time_source);
     // Try and access Volume 0 (i.e. the first partition).
     // The volume object holds information about the filesystem on that volume.
-    let volume0 = volume_mgr.open_volume(embedded_sdmmc::VolumeIdx(0))?;
+    let volume0 = volume_mgr.open_volume(embedded_sdmmc::blocking::VolumeIdx(0))?;
     println!("Volume 0: {:?}", volume0);
     // Open the root directory (mutably borrows from the volume).
     let root_dir = volume0.open_root_dir()?;
     // Open a file called "MY_FILE.TXT" in the root directory
     // This mutably borrows the directory.
-    let my_file = root_dir.open_file_in_dir("MY_FILE.TXT", embedded_sdmmc::Mode::ReadOnly)?;
+    let my_file = root_dir.open_file_in_dir("MY_FILE.TXT", embedded_sdmmc::blocking::Mode::ReadOnly)?;
     // Print the contents of the file, assuming it's in ISO-8859-1 encoding
     while !my_file.is_eof() {
         let mut buffer = [0u8; 32];

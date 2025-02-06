@@ -71,12 +71,12 @@
 
 use std::{cell::RefCell, io::prelude::*};
 
-use embedded_sdmmc::{
+use embedded_sdmmc::blocking::{
     Error as EsError, LfnBuffer, RawDirectory, RawVolume, ShortFileName, VolumeIdx,
 };
 
-type VolumeManager = embedded_sdmmc::VolumeManager<LinuxBlockDevice, Clock, 8, 8, 4>;
-type Directory<'a> = embedded_sdmmc::Directory<'a, LinuxBlockDevice, Clock, 8, 8, 4>;
+type VolumeManager = embedded_sdmmc::blocking::VolumeManager<LinuxBlockDevice, Clock, 8, 8, 4>;
+type Directory<'a> = embedded_sdmmc::blocking::Directory<'a, LinuxBlockDevice, Clock, 8, 8, 4>;
 
 use crate::linux::{Clock, LinuxBlockDevice};
 
@@ -324,7 +324,7 @@ impl Context {
     /// print a text file
     fn cat(&self, filename: &Path) -> Result<(), Error> {
         let (dir, filename) = self.resolve_filename(filename)?;
-        let f = dir.open_file_in_dir(filename, embedded_sdmmc::Mode::ReadOnly)?;
+        let f = dir.open_file_in_dir(filename, embedded_sdmmc::blocking::Mode::ReadOnly)?;
         let mut data = Vec::new();
         while !f.is_eof() {
             let mut buffer = vec![0u8; 65536];
@@ -344,7 +344,7 @@ impl Context {
     /// print a binary file
     fn hexdump(&self, filename: &Path) -> Result<(), Error> {
         let (dir, filename) = self.resolve_filename(filename)?;
-        let f = dir.open_file_in_dir(filename, embedded_sdmmc::Mode::ReadOnly)?;
+        let f = dir.open_file_in_dir(filename, embedded_sdmmc::blocking::Mode::ReadOnly)?;
         let mut data = Vec::new();
         while !f.is_eof() {
             let mut buffer = vec![0u8; 65536];

@@ -25,11 +25,11 @@ use linux::*;
 
 const FILE_TO_DELETE: &str = "README.TXT";
 
-use embedded_sdmmc::{Error, VolumeIdx};
+use embedded_sdmmc::blocking::{Error, VolumeIdx};
 
-type VolumeManager = embedded_sdmmc::VolumeManager<LinuxBlockDevice, Clock, 8, 4, 4>;
+type VolumeManager = embedded_sdmmc::blocking::VolumeManager<LinuxBlockDevice, Clock, 8, 4, 4>;
 
-fn main() -> Result<(), embedded_sdmmc::Error<std::io::Error>> {
+fn main() -> Result<(), Error<std::io::Error>> {
     env_logger::init();
     let mut args = std::env::args().skip(1);
     let filename = args.next().unwrap_or_else(|| "/dev/mmcblk0".into());
