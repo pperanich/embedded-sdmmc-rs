@@ -1,5 +1,8 @@
 [package]
-authors = ["Jonathan 'theJPster' Pallant <github@thejpster.org.uk>", "Rust Embedded Community Developers"]
+authors = [
+  "Jonathan 'theJPster' Pallant <github@thejpster.org.uk>",
+  "Rust Embedded Community Developers",
+]
 categories = ["embedded", "no-std"]
 description = "A basic SD/MMC driver for Embedded Rust."
 edition = "2021"
@@ -14,17 +17,17 @@ version = "0.8.0"
 rust-version = "1.76"
 
 [dependencies]
-bisync = "0.2.3"
-byteorder = {version = "1", default-features = false}
-defmt = {version = "0.3", optional = true}
+byteorder = { version = "1", default-features = false }
+defmt = { version = "0.3", optional = true }
 embedded-hal = "1.0.0"
 embedded-hal-async = "1.0.0"
 embedded-io = "0.6.1"
 embedded-io-async = "0.6.1"
 heapless = "^0.8"
-log = {version = "0.4", default-features = false, optional = true}
+log = { version = "0.4", default-features = false, optional = true }
 
 [dev-dependencies]
+bisync = "0.2.3"
 chrono = "0.4"
 embedded-hal-bus = "0.2.0"
 env_logger = "0.10.0"
