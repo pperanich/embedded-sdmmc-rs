@@ -17,6 +17,7 @@ version = "0.8.0"
 rust-version = "1.76"
 
 [dependencies]
+bisync = "0.2.3"
 byteorder = { version = "1", default-features = false }
 defmt = { version = "0.3", optional = true }
 embedded-hal = "1.0.0"
@@ -27,7 +28,6 @@ heapless = "^0.8"
 log = { version = "0.4", default-features = false, optional = true }
 
 [dev-dependencies]
-bisync = "0.2.3"
 chrono = "0.4"
 embedded-hal-bus = "0.2.0"
 env_logger = "0.10.0"
@@ -39,3 +39,6 @@ sha2 = "0.10"
 default = ["log"]
 defmt-log = ["dep:defmt"]
 log = ["dep:log"]
+
+[patch.crates-io]
+bisync = { git = "https://github.com/pperanich/bisync.git", branch = "fix-no-std" }
